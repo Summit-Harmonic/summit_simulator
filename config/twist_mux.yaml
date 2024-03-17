@@ -1,0 +1,50 @@
+twist_mux:
+  ros__parameters:
+    topics:
+      # Teleoperation with joystick
+      pad:
+        topic   : pad_teleop/cmd_vel
+        timeout : 0.2
+        priority: 100
+      # Teleoperation with web interface
+      web_pad:
+        topic   : web_teleop/cmd_vel
+        timeout : 0.2
+        priority: 50
+      # Teleoperation with urcap
+      urcap:
+        topic   : urcap_command_bridge/cmd_vel
+        timeout : 0.2
+        priority: 30
+      # Navigation with move_base
+      move_base:
+        topic   : move_base/cmd_vel
+        timeout : 0.2
+        priority: 20
+      # Move with docker procedure
+      docker:
+        topic   : docker/cmd_vel
+        timeout : 0.2
+        priority: 20
+      # Move with move
+      move:
+        topic   : move/cmd_vel
+        timeout : 0.2
+        priority: 20
+      # Other external sources
+      external:
+        topic   : cmd_vel
+        timeout : 0.2
+        priority: 1
+
+    locks:
+      # Pause navigation
+      pause:
+        topic   : pause_navigation
+        timeout : 0.0
+        priority: 25
+      # Emergency stop
+      emergency_stop:
+        topic   : emergency_stop
+        timeout : 0.0
+        priority: 255

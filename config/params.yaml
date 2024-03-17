@@ -1,0 +1,13 @@
+robot_id: summit
+robot_model: summit_xl
+robot_xacro_package: summit_xl_description
+robot_xacro: summit_xl_std.urdf.xacro
+summit_simulator:
+  world: empty_world
+  robot_position:
+    x: 10.0
+    y: 0.0
+    z: 0.30
+    roll: 0.0
+    pitch: 0.0
+    yaw: 0.0

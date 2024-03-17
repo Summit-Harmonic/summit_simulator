@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="robot_id" default="$(env ROBOT_ID robot)"/>
+    <arg name="namespace" default="$(var robot_id)"/>
+  
+    <!-- Laser 1 -->
+    <include file="$(find-pkg-share robot_bringup)/launch/sensors/laser/rslidar.launch.py">
+        <arg name="namespace" value="$(var namespace)"/>
+        <arg name="robot_id" value="$(var robot_id)"/>
+        <arg name="laser_name" value="top_laser"/>
+    </include>
+
+    <!-- Imu -->
+    <include file="$(find-pkg-share robot_bringup)/launch/sensors/imu/vectornav.launch.xml">
+        <arg name="namespace" value="$(var namespace)"/>
+        <arg name="robot_id" value="$(var robot_id)"/>
+        <arg name="imu_name" value="imu"/>
+    </include>
+
+    <!-- GPS -->
+    <include file="$(find-pkg-share robot_bringup)/launch/sensors/gps/ardusimple.launch.py">
+        <arg name="namespace" value="$(var namespace)"/>
+        <arg name="robot_id" value="$(var robot_id)"/>
+        <arg name="gps_name" value="gps"/>
+    </include>
+</launch>
