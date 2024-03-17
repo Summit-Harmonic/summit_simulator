@@ -37,7 +37,7 @@ source <ros2-workspace>/install/setup.bash
 ``` 
 Also it works with `.zshrc` changing by the correct extension file.
 
-# Run Gazebo & Tiago in ROS2
+# Run Gazebo & Summit in ROS 2
 Launch the robot state publisher :
 
 ```bash
