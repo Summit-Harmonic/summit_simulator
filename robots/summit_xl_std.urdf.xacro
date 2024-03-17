@@ -90,7 +90,6 @@
     <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
   </xacro:sensor_imu>
 
-
   <!-- Gazebo ros control plugins -->
   <xacro:arg name="config_controllers" default="$(find summit_simulator)/config/summit_xl_base.yaml"/>
   <xacro:arg name="update_rate" default="100"/>

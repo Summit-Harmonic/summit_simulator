@@ -1,11 +1,10 @@
-import os, launch, launch_ros
+import launch, launch_ros
 from ament_index_python.packages import get_package_share_directory
 from robotnik_common.launch import RewrittenYaml
 
 def read_params(ld : launch.LaunchDescription):
   robot_simulation = get_package_share_directory('summit_simulator')
   robot_id = launch.substitutions.LaunchConfiguration('robot_id')
-  namespace = launch.substitutions.LaunchConfiguration('namespace')
   config = launch.substitutions.LaunchConfiguration('config')
 
   ld.add_action(launch.actions.DeclareLaunchArgument(

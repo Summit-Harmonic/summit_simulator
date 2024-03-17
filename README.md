@@ -5,6 +5,11 @@
 
 This package allows running different Gazebo worlds, using the Summit Platform by [Robotnik Automation](https://github.com/RobotnikAutomation)
 
+![Summit in Small House world](doc/image_1.png)
+![Summit in Racetrack world](doc/image_2.png)
+
+
+
 # Installation 
 
 Prepare your thirparty repos:

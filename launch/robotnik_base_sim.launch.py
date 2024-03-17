@@ -4,7 +4,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.conditions import IfCondition
-from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution, PythonExpression
+from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -93,19 +93,13 @@ def generate_launch_description():
         )
     )
 
-    # Initialize Arguments
     simulation_package = LaunchConfiguration("simulation_package")
-    description_package = LaunchConfiguration("description_package")
-    bringup_package = LaunchConfiguration("bringup_package")
     description_file = LaunchConfiguration("description_file")
     gui = LaunchConfiguration("gui")
     prefix = LaunchConfiguration("prefix")
     use_sim_time = LaunchConfiguration('use_sim_time')
-    robot_id = LaunchConfiguration('robot_id')
     config_controllers = LaunchConfiguration('config_controllers')
-    description_config = LaunchConfiguration('description_config')
 
-    # Get URDF via xacro
     robot_description_content = Command(
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
@@ -131,19 +125,10 @@ def generate_launch_description():
         [FindPackageShare(simulation_package), "config", "summit.rviz"]
     )
 
-    # joint_state_publisher_node = Node(
-    #     package='joint_state_publisher',
-    #     executable='joint_state_publisher',
-    #     name='joint_state_publisher',
-    #     #namespace= robot_namespace,
-    #     output='screen',
-    # )
-
     robot_state_publisher_node = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
         name='robot_state_publisher',
-        #namespace= robot_namespace,
         output='screen',
         parameters=[{
           'use_sim_time': use_sim_time,
@@ -165,16 +150,10 @@ def generate_launch_description():
     ros2_control_node = Node(
         package='controller_manager',
         executable='ros2_control_node',
-        #namespace= robot_namespace,
         parameters=[
             {'robot_description': robot_description_control},
             config_controllers,
         ],
-        # remappings=[
-        # ('robotnik_base_control/odom', [robot_id,'/robotnik_base_control/odom']),
-        # ('robotnik_base_control/cmd_vel_unstamped', [robot_id,'/robotnik_base_control/cmd_vel']),
-        # ('joint_states', [robot_id,'/joint_states']),
-        # ],
         output='screen',
     )
 
@@ -190,7 +169,6 @@ def generate_launch_description():
         arguments=['robotnik_base_control', '--controller-manager', 'controller_manager'],
     )
 
-    # Include the twist mux launch file
     twist_mux_launcher = IncludeLaunchDescription(
         PathJoinSubstitution(
             [FindPackageShare(simulation_package), "launch", "twist_mux.launch.py"]
@@ -198,11 +176,10 @@ def generate_launch_description():
     )
 
     nodes = [
-        # joint_state_publisher_node,
         robot_state_publisher_node,
         controller_joint_node,
         controller_base_node,
-        #ros2_control_node,
+        ros2_control_node,
         rviz_node,
     ]
 
