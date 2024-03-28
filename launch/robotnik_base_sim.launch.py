@@ -3,9 +3,7 @@ from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.conditions import IfCondition
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
-
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 import launch_ros.descriptions
@@ -57,16 +55,8 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            "gui",
-            default_value="true",
-            description="Start Rviz2 and Joint State Publisher gui automatically \
-        with this launch file.",
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
             "prefix",
-            default_value='""',
+            default_value='',
             description="Prefix of the joint names, useful for \
         multi-robot setup. If changed than also joint names in the controllers' configuration \
         have to be updated.",
@@ -89,16 +79,15 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "twist_mux_file",
-            default_value=join(get_package_share_directory("robot_bringup"),'config/bringup','twist_mux.yaml'),
+            default_value=join(get_package_share_directory("summit_simulator"),'config','twist_mux.yaml'),
         )
     )
 
     simulation_package = LaunchConfiguration("simulation_package")
     description_file = LaunchConfiguration("description_file")
-    gui = LaunchConfiguration("gui")
     prefix = LaunchConfiguration("prefix")
     use_sim_time = LaunchConfiguration('use_sim_time')
-    config_controllers = LaunchConfiguration('config_controllers')
+    robot_id = LaunchConfiguration('robot_id')
 
     robot_description_content = Command(
         [
@@ -111,24 +100,11 @@ def generate_launch_description():
     )
     robot_description_param = launch_ros.descriptions.ParameterValue(robot_description_content, value_type=str)
 
-    robot_description_control = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution([FindPackageShare("summit_simulator"), "config", "summit_xl_base.xacro"]),
-            " ",
-            "use_gazebo_classic:=true",
-        ]
-    )
-
-    rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare(simulation_package), "config", "summit.rviz"]
-    )
-
     robot_state_publisher_node = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
         name='robot_state_publisher',
+        #namespace=robot_id,
         output='screen',
         parameters=[{
           'use_sim_time': use_sim_time,
@@ -136,37 +112,6 @@ def generate_launch_description():
           'publish_frequency': 100.0,
           'frame_prefix': '',
         }],
-    )
-
-    rviz_node = Node(
-        package="rviz2",
-        executable="rviz2",
-        name="rviz2",
-        output="log",
-        arguments=["-d", rviz_config_file],
-        condition=IfCondition(gui),
-    )
-
-    ros2_control_node = Node(
-        package='controller_manager',
-        executable='ros2_control_node',
-        parameters=[
-            {'robot_description': robot_description_control},
-            config_controllers,
-        ],
-        output='screen',
-    )
-
-    controller_joint_node = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['joint_state_broadcaster', '--controller-manager', 'controller_manager'],
-    )
-
-    controller_base_node = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['robotnik_base_control', '--controller-manager', 'controller_manager'],
     )
 
     twist_mux_launcher = IncludeLaunchDescription(
@@ -177,10 +122,7 @@ def generate_launch_description():
 
     nodes = [
         robot_state_publisher_node,
-        controller_joint_node,
-        controller_base_node,
-        ros2_control_node,
-        rviz_node,
+        
     ]
 
     launchers = [

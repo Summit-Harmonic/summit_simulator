@@ -188,21 +188,11 @@ Visualization Manager:
           Value: true
         front_laser_link:
           Value: true
-        front_left_wheel_link:
-          Value: true
-        front_right_wheel_link:
-          Value: true
         gps__link:
           Value: true
         gps_base_link:
           Value: true
         imu__link:
-          Value: true
-        odom:
-          Value: true
-        rear_left_wheel_link:
-          Value: true
-        rear_right_wheel_link:
           Value: true
       Marker Scale: 1
       Name: TF
@@ -210,38 +200,29 @@ Visualization Manager:
       Show Axes: true
       Show Names: false
       Tree:
-        odom:
-          base_footprint:
-            base_link:
-              base_docking_contact_link:
-                {}
-              front_camera_base_link:
-                front_camera_depth_frame:
-                  front_camera_depth_optical_frame:
-                    {}
-                front_camera_left_camera_frame:
-                  front_camera_left_camera_optical_frame:
-                    {}
-                front_camera_right_camera_frame:
-                  front_camera_right_camera_optical_frame:
-                    {}
-              front_laser_base_link:
-                front_laser_link:
+        base_footprint:
+          base_link:
+            base_docking_contact_link:
+              {}
+            front_camera_base_link:
+              front_camera_depth_frame:
+                front_camera_depth_optical_frame:
                   {}
-              front_left_wheel_link:
+              front_camera_left_camera_frame:
+                front_camera_left_camera_optical_frame:
+                  {}
+              front_camera_right_camera_frame:
+                front_camera_right_camera_optical_frame:
+                  {}
+            front_laser_base_link:
+              front_laser_link:
                 {}
-              front_right_wheel_link:
-                {}
-              gps__link:
-                {}
-              gps_base_link:
-                {}
-              imu__link:
-                {}
-              rear_left_wheel_link:
-                {}
-              rear_right_wheel_link:
-                {}
+            gps__link:
+              {}
+            gps_base_link:
+              {}
+            imu__link:
+              {}
       Update Interval: 0
       Value: true
   Enabled: true

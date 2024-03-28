@@ -21,6 +21,8 @@ vcs import < summit_simulator/thirdparty.repos
 ```
 *Check if the installation was succesfully.*
 
+> **_NOTE:_**  You must have in your workspace the robot_package distributed by Robotnik.
+
 # Building project
 
 ```bash
@@ -47,6 +49,12 @@ Try to launch the gazebo simulation:
 ```bash
 ros2 launch summit_simulator robot_gazebo.launch.py
 ``` 
+In gazebo simulator launcher, there are more nodes as RVIZ visualizator. They nodes are waiting for controller launcher and their visualization could be difuss.
+Finally, launch the controller launcher:
+```bash
+ros2 launch summit_simulator robot_simulation.launch.py
+``` 
+After the latest step, the robot visualization should be completed witouth wrongs or warnings.
 
 Otherwise, you can close the Gazebo client:
 ```bash

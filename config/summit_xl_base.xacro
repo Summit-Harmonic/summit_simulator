@@ -9,7 +9,7 @@
 
   <ros2_control name="robotnik_base_hw" type="system">
     <hardware>
-      <plugin>mock_components/GenericSystem</plugin>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
       <param name="calculate_dynamics">true</param>
     </hardware> 
     <joint name="front_left_wheel_joint">

@@ -1,66 +1,78 @@
-import os
+from os.path import join
 from ament_index_python.packages import get_package_share_directory
+
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler
-from launch.event_handlers import OnProcessExit
-from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.actions import DeclareLaunchArgument
+
 from launch_ros.actions import Node
-import xacro
 
 def generate_launch_description():
-    gazebo = IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([os.path.join(
-                    get_package_share_directory('gazebo_ros'), 'launch'), '/gazebo.launch.py']),
-             )
+    # Declare arguments
+    declared_arguments = []
+    declared_arguments.append(
+       DeclareLaunchArgument(
+            "config_controllers", 
+            default_value=join(get_package_share_directory("summit_simulator"),'config','summit_xl_base.yaml'), 
+            description="Controller config file",
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "prefix",
+            default_value='',
+            description="Prefix of the joint names, useful for \
+        multi-robot setup. If changed than also joint names in the controllers' configuration \
+        have to be updated.",
+        )
+    )
 
-    gazebo_simulation = os.path.join(
-        get_package_share_directory('summit_simulator'))
+    '''
+    prefix = LaunchConfiguration("prefix")
+    config_controllers = LaunchConfiguration('config_controllers')
 
-    xacro_file = os.path.join(gazebo_simulation,
-                              'robots',
-                              'summit_xl_std.urdf.xacro')
-    doc = xacro.parse(open(xacro_file))
-    xacro.process_doc(doc)
-    params = {'robot_description': doc.toxml()}
+    robot_description_control = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution([FindPackageShare("summit_simulator"), "config", "summit_xl_base.xacro"]),
+            " ",
+            "use_gazebo_classic:=true",
+        ]
+    )
 
-    node_robot_state_publisher = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
+    
+    ros2_control_node = Node(
+        package='controller_manager',
+        executable='ros2_control_node',
+        parameters=[
+            {'robot_description': robot_description_control},
+            config_controllers,
+        ],
+        remappings=[
+        ('robotnik_base_control/odom', [prefix,'/robotnik_base_control/odom']),
+        ('robotnik_base_control/cmd_vel_unstamped', [prefix,'/robotnik_base_control/cmd_vel']),
+        ('joint_states', [prefix,'/joint_states']),
+      ],
         output='screen',
-        parameters=[params]
+    )
+    '''
+    
+    controller_joint_node = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['joint_state_broadcaster', '--controller-manager', 'controller_manager'],
     )
 
-    spawn_entity = Node(package='gazebo_ros', executable='spawn_entity.py',
-                        arguments=['-topic', 'robot_description',
-                                   '-entity', 'summit'],
-                        output='screen')
-
-    load_joint_state_broadcaster = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-             'joint_state_broadcaster'],
-        output='screen'
+    controller_base_node = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['robotnik_base_control', '--controller-manager', 'controller_manager'],
     )
 
-    load_robotnik_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 
-             'robotnik_base_hw'],
-        output='screen'
-    )
+    nodes = [
+        controller_joint_node,
+        controller_base_node,
+    ]
 
-    return LaunchDescription([
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=spawn_entity,
-                on_exit=[load_joint_state_broadcaster],
-            )
-        ),
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=load_joint_state_broadcaster,
-                on_exit=[load_robotnik_controller],
-            )
-        ),
-        gazebo,
-        node_robot_state_publisher,
-        spawn_entity,
-    ])
+
+    return LaunchDescription(declared_arguments + nodes)
