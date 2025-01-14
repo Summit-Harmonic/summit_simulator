@@ -11,6 +11,7 @@
   <depend>rclcpp</depend>
   
   <!-- Robotnik packages -->
+  <depend>robotnik_sensors</depend>
   <exec_depend>robotnik_base_hw</exec_depend>
 
   <!-- ROS2 packages -->
@@ -19,6 +20,7 @@
 
   <!-- Packages for teleoperation -->
   <exec_depend>joy</exec_depend>
+  <depend>twist_stamper</depend>
   <exec_depend>teleop_twist_joy</exec_depend>
   <exec_depend>twist_mux</exec_depend>
 

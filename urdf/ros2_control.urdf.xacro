@@ -2,13 +2,13 @@
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
   <xacro:macro name="ros2_control">
       <gazebo>
-        <plugin name="ros_control" filename="libgazebo_ros2_control.so">
+        <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
           <parameters>$(arg config_controllers)</parameters>
         </plugin>
       </gazebo>
       <ros2_control name="robotnik_base_hw" type="system">
         <hardware>
-          <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+           <plugin>gz_ros2_control/GazeboSimSystem</plugin>
         </hardware>
         <joint name="front_left_wheel_joint">
           <command_interface name="velocity">

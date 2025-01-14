@@ -1,7 +1,6 @@
 # Summit Simulator - Repo Under Construction
 
-![distro](https://img.shields.io/badge/Ubuntu%2022-Jammy%20Jellyfish-green)
-![distro](https://img.shields.io/badge/ROS2-Humble-blue)
+
 
 This package allows running different Gazebo worlds, using the Summit Platform by [Robotnik Automation](https://github.com/RobotnikAutomation)
 

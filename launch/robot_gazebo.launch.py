@@ -1,47 +1,92 @@
 from os.path import join
-from ament_index_python.packages import get_package_share_directory
+from os import environ, pathsep
+from ament_index_python.packages import get_package_share_directory, get_package_prefix
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable, IncludeLaunchDescription, OpaqueFunction, GroupAction, RegisterEventHandler
+from launch.substitutions import PathJoinSubstitution
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import PythonExpression
-from launch.conditions import IfCondition
+from launch.substitutions import LaunchConfiguration
+from launch.event_handlers import OnProcessExit, OnProcessStart
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
+from controller_manager.launch_utils import generate_load_controller_launch_description
 
+# Function to start the Gazebo server and client
+def start_gzserver(context, *args, **kwargs):
+    pkg_path = get_package_share_directory('aws_robomaker_small_warehouse_world')
+    # world_name = 'small_house'
+    world_name = LaunchConfiguration('world_name').perform(context)
+    world = join(pkg_path, 'worlds', world_name + '.world')
+    #world = 'empty.sdf'
+
+    # Launch Gazebo server
+    start_gazebo_server_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            join(get_package_share_directory('ros_gz_sim'), 'launch',
+                         'gz_sim.launch.py')),
+        launch_arguments={'gz_args': ['-r -s ', world]}.items()
+    )
+
+    # Launch Gazebo client
+    start_gazebo_client_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            join(get_package_share_directory('ros_gz_sim'),
+                         'launch',
+                         'gz_sim.launch.py')
+        ),
+        launch_arguments={'gz_args': [' -g ']}.items(),
+    )
+
+    return [start_gazebo_server_cmd, start_gazebo_client_cmd]
+
+# Function to get the model paths
+def get_model_paths(packages_names):
+    model_paths = ""
+    for package_name in packages_names:
+        if model_paths != "":
+            model_paths += pathsep
+
+        package_path = get_package_prefix(package_name)
+        model_path = join(package_path, "share")
+
+        model_paths += model_path
+
+    if 'GZ_SIM_RESOURCE_PATH' in environ:
+        model_paths += pathsep + environ['GZ_SIM_RESOURCE_PATH']
+
+    return model_paths
+
+# Launch description
 def generate_launch_description():
-    world_package = get_package_share_directory('aws_robomaker_racetrack_world')
+    declare_sim_time = DeclareLaunchArgument(
+        'use_sim_time', default_value='true',
+        description="use_sim_time simulation parameter"
+    )
+    model_path = ''
+    resource_path = ''
 
-    use_sim_time = LaunchConfiguration('use_sim_time', default='true')
-    position_x = LaunchConfiguration("position_x")
-    position_y = LaunchConfiguration("position_y")
-    orientation_yaw = LaunchConfiguration("orientation_yaw")
-    odometry_source = LaunchConfiguration("odometry_source", default="world")
-    robot_name = LaunchConfiguration("robot_name", default="")
-    gui_rviz = LaunchConfiguration("gui_rviz", default='true')
-    robot_id = LaunchConfiguration("robot_id", default='robot')
+    pkg_path = get_package_share_directory('robot_description')
+    model_path += join(pkg_path, 'models')
+    resource_path += pkg_path + model_path
 
-    spawn_entity = Node(
-        package='gazebo_ros',
-        executable='spawn_entity.py',
-        output='screen',
-        arguments=[
-            '-topic', PythonExpression(['"/robot_description"']), 
-            '-entity', PythonExpression(['"', robot_name, '"']), 
-            '-x', position_x,
-            '-y', position_y,
-            '-Y', orientation_yaw
-        ]
+    if 'GZ_SIM_MODEL_PATH' in environ:
+        model_path += pathsep+environ['GZ_SIM_MODEL_PATH']
+    if 'GZ_SIM_RESOURCE_PATH' in environ:
+        resource_path += pathsep+environ['GZ_SIM_RESOURCE_PATH']
+
+    model_path = get_model_paths(['robot_description'])
+
+    robot_description_launcher = IncludeLaunchDescription(
+       PathJoinSubstitution(
+           [FindPackageShare("robot_description"), "launch", "robot_description.launch.py"]
+       ),
     )
 
-    gazebo_share = get_package_share_directory("gazebo_ros")
-    gazebo = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(join(gazebo_share, "launch", "gazebo.launch.py")),
-        launch_arguments={"verbose": "false"}.items(),
-    )
+    start_gazebo_server_cmd = OpaqueFunction(function=start_gzserver)
 
+    # Rviz config and launching
     rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare("summit_simulator"), "config", "summit.rviz"]
+        [FindPackageShare("summit_simulator"), "rviz", "summit.rviz"]
     )
 
     rviz_node = Node(
@@ -50,19 +95,121 @@ def generate_launch_description():
         name="rviz2",
         output="log",
         arguments=["-d", rviz_config_file],
-        condition=IfCondition(gui_rviz),
     )
 
-    return LaunchDescription([
-        DeclareLaunchArgument('world', default_value=[PythonExpression(['"',join(world_package, 'worlds'),'" + "/racetrack_day.world"']),'']),
-        DeclareLaunchArgument('gui', default_value='true'),
-        DeclareLaunchArgument('verbose', default_value='false'),
-        DeclareLaunchArgument('use_sim_time', default_value = use_sim_time),
-        DeclareLaunchArgument("position_x", default_value="10.0"),
-        DeclareLaunchArgument("position_y", default_value="10.0"),
-        DeclareLaunchArgument("orientation_yaw", default_value="2.35"),
-        DeclareLaunchArgument("odometry_source", default_value = odometry_source),
-        gazebo,
-        spawn_entity,
-        rviz_node,
-    ])
+    # Spawning robot 
+    gazebo_spawn_robot = Node(
+        package="ros_gz_sim",
+        executable="create",
+        output="screen",
+        arguments=[
+            "-model",
+            "summit_xl",
+            "-topic",
+            "robot_description",
+            "-use_sim_time",
+            "True",
+        ],
+    )
+
+    # Bridge
+    bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        name='bridge_ros_gz',
+        parameters=[
+            {
+                'config_file': join(
+                    pkg_path, 'config', 'summit_bridge.yaml'
+                ),
+                'use_sim_time': True,
+            }
+        ],
+        output='screen',
+    )
+
+    # Image bridge
+    gz_image_bridge_node = Node(
+        package="ros_gz_image",
+        executable="image_bridge",
+        arguments=[
+            "/front_camera_right/image",
+            "/front_camera_left/image",
+        ],
+        output="screen",
+        parameters=[
+            {'use_sim_time': True,
+             'camera.image.compressed.jpeg_quality': 75},
+        ],
+    )
+
+    # Load joint state broadcaster controller
+    joint_state_broadcaster = GroupAction(
+        [
+            generate_load_controller_launch_description(
+                controller_name='joint_state_broadcaster',
+                controller_params_file=join(
+                    pkg_path, 'config', 'joint_state_broadcaster.yaml'))
+        ],
+    )
+
+    # Load robotnik_base_controller controller
+    base_controller = GroupAction(
+        [
+            generate_load_controller_launch_description(
+                controller_name='robotnik_base_controller',
+                controller_params_file=join(
+                    pkg_path, 'config', 'summit_xl_base.yaml')
+            )
+        ],
+    )
+
+    # When gazebo exits, run the joint state broadcaster
+    on_gazebo_exit = RegisterEventHandler(
+        OnProcessExit(
+            target_action=gazebo_spawn_robot,
+            on_exit=[
+                joint_state_broadcaster,
+                base_controller,
+            ],
+        )
+    )
+
+    # When gazebo exits, run the joint state broadcaster
+    RegisterEventHandler(
+        OnProcessStart(
+            target_action=gazebo_spawn_robot,
+            on_start=[
+                robot_description_launcher
+            ]
+        )
+    )
+
+    # Twist stamped
+    twist_stamped = Node(
+        package="twist_stamper",
+        executable="twist_stamper",
+        name="twist_stamper",
+        output="screen",
+        parameters=[
+            {
+                "use_sim_time": True,
+            }],
+        remappings={('cmd_vel_out', '/robotnik_base_controller/cmd_vel'),
+                    ('cmd_vel_in', '/cmd_vel')},
+    )
+
+    # Create the launch description
+    ld = LaunchDescription()
+    ld.add_action(SetEnvironmentVariable('GZ_SIM_RESOURCE_PATH', model_path))
+    ld.add_action(SetEnvironmentVariable('GZ_SIM_MODEL_PATH', model_path))
+    ld.add_action(robot_description_launcher)
+    ld.add_action(declare_sim_time)
+    ld.add_action(bridge)
+    ld.add_action(gz_image_bridge_node)
+    ld.add_action(start_gazebo_server_cmd)
+    ld.add_action(rviz_node)
+    ld.add_action(gazebo_spawn_robot)
+    ld.add_action(on_gazebo_exit)
+    ld.add_action(twist_stamped)
+    return ld
