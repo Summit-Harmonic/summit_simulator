@@ -143,37 +143,37 @@ def generate_launch_description():
         ],
     )
 
-    # # Load joint state broadcaster controller
-    # joint_state_broadcaster = GroupAction(
-    #     [
-    #         generate_load_controller_launch_description(
-    #             controller_name='joint_state_broadcaster',
-    #             controller_params_file=join(
-    #                 pkg_path, 'config', 'joint_state_broadcaster.yaml'))
-    #     ],
-    # )
+    # Load joint state broadcaster controller
+    joint_state_broadcaster = GroupAction(
+        [
+            generate_load_controller_launch_description(
+                controller_name='joint_state_broadcaster',
+                controller_params_file=join(
+                    pkg_path, 'config', 'joint_state_broadcaster.yaml'))
+        ],
+    )
 
-    # # Load robotnik_base_controller controller
-    # base_controller = GroupAction(
-    #     [
-    #         generate_load_controller_launch_description(
-    #             controller_name='robotnik_base_controller',
-    #             controller_params_file=join(
-    #                 pkg_path, 'config', 'summit_xl_base.yaml')
-    #         )
-    #     ],
-    # )
+    # Load robotnik_base_controller controller
+    base_controller = GroupAction(
+        [
+            generate_load_controller_launch_description(
+                controller_name='robotnik_base_controller',
+                controller_params_file=join(
+                    pkg_path, 'config', 'summit_xl_base.yaml')
+            )
+        ],
+    )
 
-    # # When gazebo exits, run the joint state broadcaster
-    # on_gazebo_exit = RegisterEventHandler(
-    #     OnProcessExit(
-    #         target_action=gazebo_spawn_robot,
-    #         on_exit=[
-    #             joint_state_broadcaster,
-    #             base_controller,
-    #         ],
-    #     )
-    # )
+    # When gazebo exits, run the joint state broadcaster
+    on_gazebo_exit = RegisterEventHandler(
+        OnProcessExit(
+            target_action=gazebo_spawn_robot,
+            on_exit=[
+                joint_state_broadcaster,
+                base_controller,
+            ],
+        )
+    )
 
     # When gazebo exits, run the joint state broadcaster
     RegisterEventHandler(
@@ -210,6 +210,6 @@ def generate_launch_description():
     ld.add_action(start_gazebo_server_cmd)
     ld.add_action(rviz_node)
     ld.add_action(gazebo_spawn_robot)
-    #ld.add_action(on_gazebo_exit)
+    ld.add_action(on_gazebo_exit)
     ld.add_action(twist_stamped)
     return ld
