@@ -9,7 +9,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(robotnik_sensors)
 
-install(DIRECTORY launch rviz robots urdf
+install(DIRECTORY launch rviz urdf
         DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
