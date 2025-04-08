@@ -13,7 +13,7 @@ def generate_launch_description():
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
-            PathJoinSubstitution([FindPackageShare("summit_simulator"), "robots", description_file]),
+            PathJoinSubstitution([FindPackageShare("robot_description"), "robots", description_file]),
             " ",
             "prefix:=", prefix
         ]
