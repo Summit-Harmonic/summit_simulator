@@ -1,17 +1,17 @@
 repositories:
   ThirdParty/aws-robomaker-bookstore-world:
     type: git
-    url: https://github.com/aws-robotics/aws-robomaker-bookstore-world.git
+    url: https://github.com/Juancams/aws-robomaker-bookstore-world.git
     version: ros2-jazzy
   ThirdParty/aws-robomaker-small-house-world:
     type: git
-    url: https://github.com/aws-robotics/aws-robomaker-small-house-world.git
+    url: https://github.com/Juancams/aws-robomaker-small-house-world.git
     version: ros2-jazzy
   ThirdParty/aws-robomaker-small-warehouse-world:
     type: git
-    url: https://github.com/aws-robotics/aws-robomaker-small-warehouse-world.git
+    url: https://github.com/Juancams/aws-robomaker-small-warehouse-world.git
     version: ros2-jazzy
   ThirdParty/aws-robomaker-racetrack-world:
     type: git
-    url: https://github.com/aws-robotics/aws-robomaker-racetrack-world.git
+    url: https://github.com/Juancams/aws-robomaker-racetrack-world.git
     version: ros2-jazzy
