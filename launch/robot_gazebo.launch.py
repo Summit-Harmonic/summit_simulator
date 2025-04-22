@@ -14,10 +14,8 @@ from controller_manager.launch_utils import generate_load_controller_launch_desc
 # Function to start the Gazebo server and client
 def start_gzserver(context, *args, **kwargs):
     pkg_path = get_package_share_directory('urjc_excavation_world')
-    # world_name = 'small_house'
     world_name = LaunchConfiguration('world_name').perform(context)
     world = join(pkg_path, 'worlds', world_name + '.world')
-    #world = 'empty.sdf'
 
     # Launch Gazebo server
     start_gazebo_server_cmd = IncludeLaunchDescription(
