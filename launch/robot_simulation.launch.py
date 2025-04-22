@@ -19,7 +19,7 @@ def generate_launch_description():
             generate_load_controller_launch_description(
                 controller_name='joint_state_broadcaster',
                 controller_params_file=join(
-                    pkg_share_folder, 'config', 'joint_state_broadcaster.yaml'))
+                    pkg_share_folder, 'config', 'summit_controllers.yaml'))
         ],
     )
 
@@ -29,7 +29,7 @@ def generate_launch_description():
             generate_load_controller_launch_description(
                 controller_name='robotnik_base_controller',
                 controller_params_file=join(
-                    pkg_share_folder, 'config', 'summit_xl_base.yaml')
+                    pkg_share_folder, 'config', 'summit_controllers.yaml')
             )
         ],
     )

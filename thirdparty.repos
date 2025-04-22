@@ -1,17 +1,13 @@
 repositories:
-  ThirdParty/aws-robomaker-bookstore-world:
+  ThirdParty/urjc-excavation-world:
     type: git
-    url: https://github.com/Juancams/aws-robomaker-bookstore-world.git
-    version: ros2-jazzy
-  ThirdParty/aws-robomaker-small-house-world:
+    url: https://github.com/juanscelyg/urjc-excavation-world.git
+    version: main
+  ThirdParty/robot_description:
     type: git
-    url: https://github.com/Juancams/aws-robomaker-small-house-world.git
-    version: ros2-jazzy
-  ThirdParty/aws-robomaker-small-warehouse-world:
+    url: https://github.com/Summit-Harmonic/robot_description.git
+    version: ros2-devel
+  ThirdParty/robotnik_sensors:
     type: git
-    url: https://github.com/Juancams/aws-robomaker-small-warehouse-world.git
-    version: ros2-jazzy
-  ThirdParty/aws-robomaker-racetrack-world:
-    type: git
-    url: https://github.com/Juancams/aws-robomaker-racetrack-world.git
-    version: ros2-jazzy
+    url: https://github.com/Summit-Harmonic/robotnik_sensors.git
+    version: ros2-devel

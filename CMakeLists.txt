@@ -7,9 +7,10 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(robotnik_sensors)
+find_package(robot_descriptions REQUIRED)
+find_package(robotnik_sensors REQUIRED)
 
-install(DIRECTORY launch rviz urdf
+install(DIRECTORY config launch maps rviz urdf worlds
         DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
