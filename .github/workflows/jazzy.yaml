@@ -3,10 +3,10 @@ name: jazzy
 on:
   pull_request:
     branches:
-      - jazzy
+      - main
   push:
     branches:
-      - jazzy
+      - main
       
 jobs:
   build-and-test:
