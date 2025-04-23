@@ -27,6 +27,7 @@ jobs:
         with:
           package-name: summit_simulator
           target-ros2-distro: jazzy
+          import-token: ${{ secrets.GITHUB_TOKEN }}
           vcs-repo-file-url: ${GITHUB_WORKSPACE}/thirdparty.repos
           skip-test: true
           colcon-defaults: |
