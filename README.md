@@ -41,8 +41,14 @@ Also it works with `.zshrc` changing by the correct extension file.
 
 To launch the gazebo simulation:
 ```bash
+ros2 launch summit_simulator robot_gazebo.launch.py
+``` 
+
+By default, the `urjc_excavation` world is loaded. You can change it by modifying the `world_name` argument. Before you must be sure thath the world is in workspace and it defined as argument in the launch file.:
+```bash
 ros2 launch summit_simulator robot_gazebo.launch.py world_name:=urjc_excavation
 ``` 
+
 - **world_name**: The name of the world to be loaded. The default is `urjc_excavation`. You should change if you have another world in your workspace. For this change, also you must change the package name in the launch file. 
 
 For this step, your robot will be spawned in the world. You can see the robot in the Gazebo client.
@@ -54,17 +60,4 @@ Otherwise, you can close the Gazebo client:
 pkill -f gzclient
 ``` 
 
-## License
 
-Shield: 
-
-[![CC BY-SA 4.0][cc-by-sa-shield]][cc-by-sa]
-
-This work is licensed under a
-[Creative Commons Attribution-ShareAlike 4.0 International License][cc-by-sa].
-
-[![CC BY-SA 4.0][cc-by-sa-image]][cc-by-sa]
-
-[cc-by-sa]: http://creativecommons.org/licenses/by-sa/4.0/
-[cc-by-sa-image]: https://licensebuttons.net/l/by-sa/4.0/88x31.png
-[cc-by-sa-shield]: https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg
