@@ -152,7 +152,7 @@ def generate_launch_description():
     base_controller = GroupAction(
         [
             generate_load_controller_launch_description(
-                controller_name='robotnik_base_controller',
+                controller_name='robotnik_base_control',
                 controller_params_file=join(
                     pkg_path, 'config', 'summit_controllers.yaml')
             )
@@ -190,7 +190,7 @@ def generate_launch_description():
             {
                 "use_sim_time": True,
             }],
-        remappings={('cmd_vel_out', '/robotnik_base_controller/cmd_vel'),
+        remappings={('cmd_vel_out', '/robotnik_base_control/cmd_vel'),
                     ('cmd_vel_in', '/cmd_vel')},
     )
 
