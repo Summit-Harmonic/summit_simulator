@@ -380,23 +380,6 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
-    - Alpha: 0.699999988079071
-      Blocks: 2
-      Class: rviz_satellite/AerialMap
-      Draw Behind: true
-      Enabled: false
-      Name: AerialMap
-      Object URI: https://tile.openstreetmap.org/{z}/{x}/{y}.png
-      TF tolerance: 0.10000000149011612
-      Timeout: 3
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /robot/gps/fix
-      Value: false
-      Zoom: 19
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -481,5 +464,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1029
-  X: 216
-  Y: 131
+  X: 790
+  Y: 160

@@ -61,6 +61,18 @@ def generate_launch_description():
             'worlds',
             'urjc_excavation.world'))
 
+    x_arg = DeclareLaunchArgument(
+        'x', default_value='0.0',
+        description='X position of the robot')
+    
+    y_arg = DeclareLaunchArgument(
+        'y', default_value='0.0',
+        description='Y position of the robot')
+
+    z_arg = DeclareLaunchArgument(
+        'z', default_value='0.5',
+        description='Z position of the robot')
+
     # Launch Gazebo server
     start_gazebo_server_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -104,6 +116,12 @@ def generate_launch_description():
             "robot_description",
             "-use_sim_time",
             "True",
+            "-x",
+            LaunchConfiguration('x'),
+            "-y",
+            LaunchConfiguration('y'),
+            "-z",
+            LaunchConfiguration('z'),
         ],
     )
 
@@ -199,6 +217,9 @@ def generate_launch_description():
     ld.add_action(SetEnvironmentVariable('GZ_SIM_RESOURCE_PATH', model_path))
     ld.add_action(SetEnvironmentVariable('GZ_SIM_MODEL_PATH', model_path))
     ld.add_action(world_arg)
+    ld.add_action(x_arg)
+    ld.add_action(y_arg)
+    ld.add_action(z_arg)
     ld.add_action(robot_description_launcher)
     ld.add_action(declare_sim_time)
     ld.add_action(bridge)
