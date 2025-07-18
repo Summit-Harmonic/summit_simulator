@@ -37,7 +37,7 @@ def generate_launch_description():
     model_path = ''
     resource_path = ''
 
-    pkg_path = get_package_share_directory('robot_description')
+    pkg_path = get_package_share_directory('robotnik_description')
     model_path += join(pkg_path, 'models')
     resource_path += pkg_path + model_path
 
@@ -46,11 +46,11 @@ def generate_launch_description():
     if 'GZ_SIM_RESOURCE_PATH' in environ:
         resource_path += pathsep+environ['GZ_SIM_RESOURCE_PATH']
 
-    model_path = get_model_paths(['robot_description'])
+    model_path = get_model_paths(['robotnik_description'])
 
     robot_description_launcher = IncludeLaunchDescription(
        PathJoinSubstitution(
-           [FindPackageShare("robot_description"), "launch", "robot_description.launch.py"]
+           [FindPackageShare("robotnik_description"), "launch", "robot_description.launch.py"]
        )
     )
 

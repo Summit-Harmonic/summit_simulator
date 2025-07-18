@@ -11,7 +11,7 @@
   <depend>rclcpp</depend>
   
   <!-- Robotnik packages -->
-  <depend>robot_description</depend>
+  <depend>robotnik_description</depend>
   <depend>robotnik_sensors</depend>
 
  <!-- Packages for building and running the robot -->
